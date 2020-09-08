@@ -1,0 +1,21 @@
+{
+    "name": "balakarthikeyan/sample-composer",
+    "description": "Importing hello world composer package",
+    "require": {
+        "balakarthikeyan/hello-composer": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Balakarthikeyan",
+            "email": "balakarthikeyan07@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "balakarthikeyan\\HelloComposer\\": "src/"
+        }
+    },
+    "require-dev": {
+    }
+}
