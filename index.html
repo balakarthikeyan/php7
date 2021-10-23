@@ -4,11 +4,108 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="scripts/jquery.min.js"></script>
-    <script type="text/javascript" src="scripts/data.js"></script>
-    <script type="text/javascript" src="scripts/filter.js"></script>
+    <!-- <script type="text/javascript" src="scripts/data.js"></script>
+    <script type="text/javascript" src="scripts/filter.js"></script> -->
+    <script>
+        function ajaxRequest(method, turl, params, thandler, restype) {
+            if (restype == undefined) restype = 'html';
+            var xmlreq = false;
+            if (window.XMLHttpRequest) xmlreq = new XMLHttpRequest(); //mozilla/safari/chrome
+            else if (window.ActiveXObject) xmlreq = new ActiveXObject("Microsoft.XMLHTTP"); //IE
+            if (xmlreq) {
+                xmlreq.open(method, turl, true);
+                xmlreq.setRequestHeader('Access-Control-Allow-Origin', '*');
+                xmlreq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xmlreq.onreadystatechange = function() {
+                    if (xmlreq.readyState == 4) {
+                        if (restype == 'xml') thandler(xmlreq.responseXML);
+                        else thandler(xmlreq.responseText);
+                    }
+                }
+                xmlreq.send(params);
+            }
+        }
+        var ajaxUrl   = 'http://norvig.com/big.txt';
+        var ajaxUrl   = 'http://localhost:8080/php7/test.txt';
+        var argParam  = 'rand=' + Math.random();
+        ajaxRequest('get', ajaxUrl, argParam, callResult);  
+        function callResult(res) {        
+            var text    = res.toString();
+            var results = {};
+            var lines   = text.split("\n");
+            var lineno  = 1;
+            var ignoreCase = false;
+            lines.forEach(function (line) {
+                line = line.replace(/^\s+/, "").replace(/\s+$/, "");
+                var parts = line.split(/\s+/);
+                var words = {};
+                parts.forEach(function (keyword) {
+                    keyword = keyword.replace(/^\s+/, "").replace(/\s+$/, "");
+                    if(!ignoreCase) { keyword = keyword.toLowerCase(); }
+                    if (words.hasOwnProperty(keyword)) {
+                        words[keyword]++;
+                    } else {
+                        words[keyword]=1;
+                    }
+                });
+                if (!results[lineno]) {
+                    results[lineno] = words;
+                }
+                lineno++;
+            });            
+            console.log(results);
+        }
+        $.ajaxSetup({
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+            },
+        });
+        $.ajax({
+            method : 'GET',
+            url: 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup',
+            crossDomain: true,
+            dataType: 'json',
+            data: {
+                key: 'dict.1.1.20170610T055246Z.0f11bdc42e7b693a.eefbde961e10106a4efa7d852287caa49ecc68cf',
+                lang:'en-en',
+                text:'time'
+            }, 
+            success: function(data) {
+                console.log(data)
+            },
+            error: function(error) {
+                console.log(error)
+            }
+        });                
+    </script>
 <head>
 </head>
 <body>
 <h1>Filtering</h1>
+<pre>
+async function send(url,data) {
+    let r= await fetch(url, {
+          method: "POST", 
+          headers: {
+            "My-header": "abc"  
+          },
+          body: JSON.stringify(data), 
+    })
+    return await r.json()
+  }
+  
+  // Example usage
+  
+  let url='https://server.test-cors.org/server?enable=true&status=200&methods=POST&headers=my-header';
+  
+  async function run() 
+  {
+   let jsonObj = await send(url,{ some: 'testdata' });
+   console.log(jsonObj[0].request.httpMethod + ' was send - open chrome console > network to see it');
+  }
+  
+  run();
+</pre>
 </body>
 </html>
